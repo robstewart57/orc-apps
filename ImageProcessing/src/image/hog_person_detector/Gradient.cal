@@ -168,6 +168,7 @@ actor Gradient() uint(size=8) Gin ==> uint(size=8) Grad :
 
         // Calculate magnitude
         Sqrt(dx * dx + dy * dy);
+        out := out / 2;
         mag := out;
 
         // Calculate angle
