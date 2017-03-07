@@ -3,44 +3,62 @@ package image.hog_person_detection;
 actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(size=8) Histogram :
 	uint(size=8) histogram[9];
 	uint(size=8) i := 0;
+	uint(size=8) read_count := 0;
 	uint(size=8) out_count := 0;
-	uint(size=8) temp := 0;
+	uint(size=8) slot := 0;
+	uint(size=8) left := 0;
+	uint(size=8) low := 0;
+	uint(size=8) high := 0;
 	
 	
-	initArray: action ==> do
-	histogram[i] := 0;
+	initArray: action ==> 
+	do
+		read_count := 0;
+		out_count := 0;
+		i := 0;
+		while i < 9 do
+			histogram[i] := 0;
+			i := i + 1;
+		end
+		i:= 0;
 	end
 	
-    bin: action angle:[a], intensity:[i] ==> do
-   		if a < 10 then
+    bin: action angle:[a], intensity:[i] ==> 
+    guard
+    	read_count < 8*8
+    do
+   		if a <= 10 then
    			histogram[0] := histogram[0] + i;
-   		else if a > 170 then 
-   			histogram[8] := histogram[8] + i;
-   		else if (a mod 20) = 10 then
-   			temp := a/20;
-   			histogram[(a/20)-0.5] := histogram[temp] + i;
    		else 
-   			if (a mod 20) = 0 then
-   				temp := (a-10)/20;
-   				histogram[((a-10)/20)-0.5] := histogram[temp] + (i/2);
-   				temp:= (a+10)/20;
-   				histogram[((a+10)/20)-0.5] := histogram[temp] + (i/2);
-   			end
-   			if (a mod 20) > 10 then
-   				histogram[((a-((a mod 20) - 10))/20)-0.5] := histogram[((a-((a mod 20) - 10))/20)-0.5] + i*(a-((a-((a mod 20) - 10)))/20;
-   				histogram[((a+(20-((a mod 20)-10)))/20)-0.5] := histogram[((a+(20-((a mod 20)-10)))/20)-0.55] + i*(1-(a-((a-((a mod 20) - 10)))/20);
-   			end	
-   			if (a mod 20) < 10 then 
-   				histogram[((a-((a mod 20) + 10))/20)-0.5] := histogram[((a-((a mod 20) + 10))/20)-0.5] + i*(a-(a-((a mod 20) + 10)))/20;
-   				histogram[((a+(10 -(a mod 20)))/20)-0.5] := histogram[((a+(10 -(a mod 20)))/20)-0.5] + i*(1-(a-(a-((a mod 20) + 10)))/20);
+   			if a >= 170 then 
+   				histogram[8] := histogram[8] + i;
+   			else 
+	   			a := a - 10;
+	   			slot := a / 20;
+	   			left := a mod 20;
+	   			
+	   			if left = 0 then
+	   				histogram[slot] := histogram[slot] + i;
+	   			else
+	   			
+		   			low := (left * i) / 20;
+		   			high := ((20-left) * i) /20;
+		   		
+		   			if slot > 0 then
+		   				histogram[slot] := histogram[slot] + low;
+		   			end
+		   			if slot < 9 then
+		   				histogram[slot + 1] := histogram[slot+1] + high;
+		   			end	
+	   			end
    			end
    		end
-   			
+   		read_count := read_count + 1;		
     end
     
     outputArray: action ==> Histogram:[histogram[out_count]]
     guard
-    	out_count < 10
+    	out_count < 9 and read_count >= 8*8
     do
     	out_count := out_count + 1;
 	end
