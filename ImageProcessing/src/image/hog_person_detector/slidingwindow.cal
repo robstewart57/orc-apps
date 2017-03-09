@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 2017, Heriot-Watt University, Edinburgh
  * All rights reserved.
@@ -28,14 +30,89 @@
  */
 
 /*
- * Author: Calum Turner, cajturner@gmail.com
- * Date: 08.02.2017
+ * Author: Mark Young & Teymoor Rasheed Ali my120@hw.ac.uk tr78@hw.ac.uk
+ * Date: 27.02.2017
  */
-package image.arithmetic;
+package image.hog_person_detector;
 
-actor subtraction() uint(size=8) Gin1, uint(size=8) Gin2 ==> uint(size=8) Gout :
+actor slidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 
-    action Gin1:[x], Gin2:[y] ==> Gout:[if y < x then x - y else 0 end ]
-    end
+/* Constants */
+	uint(size=8) imageHeight = 128;
+
+	uint(size=8) windowDimension = 8;
+
+	uint(size=8) imageWidth = 64;
+
+	uint(size=16) bufferSize = imageWidth * imageHeight;
+
+	/* Variables */
+	uint(size=16) head := 0;
+
+	uint(size=8) buffer [ bufferSize ];
+
+	uint(size=8) y := 0;
+
+	uint(size=8) x := 0;
+
+	uint(size=8) xBase := 0;
+
+	uint(size=8) yBase := 0;
+
+	uint(size=8) out;
+
+	read: action Gin:[ x ] ==>
+	guard
+		head < bufferSize
+	do
+		buffer[head] := x;
+		head := head + 1;
+	end
+
+	transition: action ==>
+	guard
+		head = bufferSize
+	do
+		head := 0;
+		x := 0;
+		y := 0;
+		xBase := 0;
+	end
+
+	write: action ==> Gout:[ out ]
+	guard
+		head < bufferSize
+	do
+		out := buffer[(y + yBase) * imageWidth + x + xBase];
+		x := x + 1;
+		if x >= windowDimension then
+			x := 0;
+			y := y + 1;
+			if y >= windowDimension then
+				xBase := xBase + windowDimension;
+				y := 0;
+				x := 0;
+				if xBase >= imageWidth then
+					yBase := yBase + windowDimension;
+					xBase := 0;
+				end
+			end
+		end
+		head := head + 1;
+	end
+
+	reset: action ==>
+	guard
+		head >= bufferSize
+	do
+		head := 0;
+	end
+
+	schedule fsm read :
+		read ( read ) --> read;
+		read ( transition ) --> write;
+		write ( write ) --> write;
+		write ( reset ) --> read;
+		end
 
 end

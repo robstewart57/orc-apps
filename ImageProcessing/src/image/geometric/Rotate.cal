@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 2017, Heriot-Watt University, Edinburgh
  * All rights reserved.
@@ -28,14 +30,94 @@
  */
 
 /*
- * Author: Calum Turner, cajturner@gmail.com
- * Date: 08.02.2017
+ * Author: Teymoor Rasheed Ali tr78@hw.ac.uk
+ * Date: 27.02.2017
  */
-package image.arithmetic;
+package image.geometric;
 
-actor subtraction() uint(size=8) Gin1, uint(size=8) Gin2 ==> uint(size=8) Gout :
+actor Rotate () uint(size=8) Gin ==> uint(size=8) Gout :
 
-    action Gin1:[x], Gin2:[y] ==> Gout:[if y < x then x - y else 0 end ]
-    end
+/* Constants */
+	uint(size=16) imageHeight = 512;
+
+	uint(size=16) imageWidth = 512;
+
+	uint(size=32) bufferSize = imageWidth * imageHeight;
+
+	uint(size=8) angle = 90; //90,180,270
+
+
+	/* Variables */
+	uint(size=32) head := 0;
+
+	uint(size=8) buffer [ bufferSize ];
+
+	uint(size=16) y := 0;
+
+	uint(size=16) x := 0;
+
+	uint(size=8) out;
+
+	read: action Gin:[ x ] ==>
+	guard
+		head < bufferSize
+	do
+		buffer[head] := x;
+		head := head + 1;
+	end
+
+	transition: action ==>
+	guard
+		head = bufferSize
+	do
+		head := 0;
+		x := 0;
+		y := 0;
+	end
+
+	write: action ==> Gout:[ out ]
+	guard
+		head < bufferSize
+	do
+		if angle <= 90 then
+			out := buffer[imageHeight * imageWidth - (y + 1) * imageWidth + x];
+			y := y + 1;
+			if y >= imageWidth then
+				y := 0;
+				x := x + 1;
+			end
+		else
+			if angle <= 180 then
+				out := buffer[imageHeight * imageWidth - y * imageWidth - x];
+				x := x + 1;
+				if x >= imageWidth then
+					x := 0;
+					y := y + 1;
+				end
+			else
+				out := buffer[imageWidth * (y + 1) - x];
+				y := y + 1;
+				if y >= imageWidth then
+					y := 0;
+					x := x + 1;
+				end
+			end
+		end
+		head := head + 1;
+	end
+
+	reset: action ==>
+	guard
+		head >= bufferSize
+	do
+		head := 0;
+	end
+
+	schedule fsm read :
+		read ( read ) --> read;
+		read ( transition ) --> write;
+		write ( write ) --> write;
+		write ( reset ) --> read;
+		end
 
 end
