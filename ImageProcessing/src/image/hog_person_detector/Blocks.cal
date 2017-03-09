@@ -47,7 +47,7 @@ actor Blocks() uint(size=8) Gin ==> uint(size=8) Gout :
     uint(size=16) last[HIST_LENGTH];
     uint(size=16) now[HIST_LENGTH];
     int(size=32) col := 0;
-    uint(size=32) row := COLS;
+    uint(size=32) row := ROWS;
     uint(size=32) op := 0;
     uint(size=32) o := 0;
 
@@ -64,8 +64,8 @@ actor Blocks() uint(size=8) Gin ==> uint(size=8) Gout :
         uint(size=32) slot,
         uint(size=32) offset
     do
-        slot := op mod 9;
-        offset := op / 9;
+        slot := op / HIST_LENGTH;
+        offset := op mod HIST_LENGTH;
 
         if slot = 0 then
             // Top left
@@ -122,7 +122,7 @@ actor Blocks() uint(size=8) Gin ==> uint(size=8) Gout :
 
         col := col + 1;
         // If we need to go to the next line...
-        if col >= COLS then
+        if col > COLS then
             col := 0;
             row := row + 1;
 
