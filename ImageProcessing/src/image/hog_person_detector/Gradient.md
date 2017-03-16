@@ -5,7 +5,8 @@ Takes in an 8 by 8 cell of values, then outputs the gradients (as both an angle 
 * **uint(size=8) Gin**: The stream to read the cells from.
 
 ## Outputs ##
-* **uint(size=8) Grad**: The stream to output `[angle, mag]` pairs to.
+* **uint(size=8) Angle**: The stream to output angles to.
+* **uint(size=8) Magnitude**: The stream to output magnitudes to.
 
 ## Usage ##
 First of all, reads values from Gin until it has an 8x8 cell. It expects the values to be written left to right, top to bottom. While it is doing this, it outputs nothing.
@@ -14,7 +15,7 @@ Once it has a full set of cells, it goes through each pixel calculating the grad
 
 It then uses these values to calculate a vector. If the point was on an "edge", this vector points perpendicular to that edge. The magnitude of this vector is how "sharp" that edge is.
 
-For each pixel in the cell it outputs an `[angle, mag]` pair (left to right, top to bottom as follows:
+For each pixel in the cell it outputs an angle and magnitude on the appropriate streams (left to right, top to bottom) as follows:
 
 * `angle`: Half the angle of the vector in degrees. The initial value for this is `[0..360]`, but since it gets halved (so it fits in an 8 bit int), the range is `[0..180]`.
 * `mag`: Half the magnitude of the vector, basically equal to `sqrt(dx^2 + dy^2) / 2`.
