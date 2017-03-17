@@ -1,8 +1,8 @@
 package image.hog_person_detection;
 
-actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(size=8) Histogram :
-	uint(size=8) histogram[9];
-	uint(size=8) i := 0;
+actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(size=16) Histogram :
+	uint(size=16) histogram[9];
+	uint(size=16) i := 0;
 	uint(size=8) read_count := 0;
 	uint(size=8) out_count := 0;
 	uint(size=8) slot := 0;
@@ -23,26 +23,27 @@ actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(si
 		i:= 0;
 	end
 	
-    bin: action angle:[a], intensity:[i] ==> 
+    bin: action angle:[angle], intensity:[intense] ==> 
     guard
     	read_count < 64
     do
-   		if a <= 10 then
+  		i := intense;
+   		if angle <= 10 then
    			histogram[0] := histogram[0] + i;
    		else 
-   			if a >= 170 then 
+   			if angle >= 170 then 
    				histogram[8] := histogram[8] + i;
    			else 
-	   			a := a - 10;
-	   			slot := a / 20;
-	   			left := a mod 20;
+	   			angle := angle - 10;
+	   			slot := angle / 20;
+	   			left := angle mod 20;
 	   			
 	   			if left = 0 then
 	   				histogram[slot] := histogram[slot] + i;
 	   			else
 	   			
-		   			low := (left * i) / 20;
-		   			high := ((20-left) * i) /20;
+		   			low := ((20 - left) * i) / 20;
+		   			high := (left * i) /20;
 		   		
 		   			if slot > 0 then
 		   				histogram[slot] := histogram[slot] + low;
