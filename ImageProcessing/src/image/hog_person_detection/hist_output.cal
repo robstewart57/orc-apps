@@ -1,0 +1,13 @@
+package image.hog_person_detection;
+
+actor hist_output() uint(size=8) values ==>  :
+
+	
+    action values:[a] ==>
+    do
+    	print("result - " + a + "\n");
+	    	
+	end
+	
+
+end
