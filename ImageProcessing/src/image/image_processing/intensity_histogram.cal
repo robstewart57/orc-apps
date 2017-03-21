@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 2017, Heriot-Watt University, Edinburgh
  * All rights reserved.
@@ -32,65 +34,63 @@
  * Date: 08.02.2017
  * See intensity_histogram.md for documentation.
  */
-
 package image.image_processing;
-import image.constants.constants.*;
 
-actor intensity_histogram() uint(size=8) Gin1 ==> uint(size=8) Gout :
+import image.constants.constants.* ;
+
+actor intensity_histogram () uint(size=8) Gin1 ==> uint(size=16) Gout :
+
 	uint(size=32) imagesize = IM_WIDTH_OUT * IM_HEIGHT_OUT * COLOUR_CHANNELS_OUT;
-    uint(size=32) p_count := 0;
-	uint(size=8) histogram [255] := [0]; 
-	uint(size=8) o_count := 0;
-	uint(size=8) i := 0;
-	
-	initActor: action ==> do
-	o_count := 0;
-	p_count := 0;
-	i := 0;
+
+	uint(size=32) p_count := 0;
+
+	uint(size=16) histogram [ 256 ] := [ 0 ];
+
+	uint(size=9) o_count := 0;
+
+	uint(size=9) i := 0;
+
+	initActor: action ==>
+	do
+		o_count := 0;
+		p_count := 0;
+		i := 0;
 	end
-	
-	initArray: action ==> do
-	histogram[i] := 0;
-	println("init "+i);
-	i := i+1;
-	
+
+	initArray: action ==>
+	guard
+	    i < 256
+	do
+		histogram[i] := 0;
+		i := i + 1;
 	end
-	
-	initDone: action ==>
-    guard i < 255
-    end
-    
-    processPixels: action Gin1:[x] ==> 
-    guard
-    	i = 255
-    do
-    histogram[x] := histogram[x] + 1;
-    p_count := p_count + 1;
-    end
-    
-    outputArray: action ==> Gout:[histogram[o_count]] 
-    guard
-    	p_count = imagesize,
-    	i = 255,
-    	o_count < 255
-    do
-    println("hist "+o_count+" - "+histogram[o_count]);
-    o_count := o_count + 1;
-   
-    end
-    
-    resetActor: action ==> 
-    guard
-    	o_count = 255
-    end
-	
-	schedule fsm init:
-		init (initActor) --> initHist;
-		initHist (initArray) --> read;
-		read (initDone) --> initHist;
-		read (processPixels) --> read;
-        read (outputArray) --> read;
-        read (resetActor) --> init;
-    end
+
+	processPixels: action Gin1:[ x ] ==>
+	guard
+		i = 256
+	do
+		histogram[x] := histogram[x] + 1;
+		p_count := p_count + 1;
+	end
+
+	outputArray: action ==> Gout:[ histogram[o_count-1] ]
+	guard
+		p_count = imagesize , i = 256 , o_count < 256
+	do
+		o_count := o_count + 1;
+	end
+
+	resetActor: action ==>
+	guard
+		o_count = 256
+	end
+
+	schedule fsm init :
+		init ( initActor ) --> read;
+		read ( initArray ) --> read;
+		read ( processPixels ) --> read;
+		read ( outputArray ) --> read;
+		read ( resetActor ) --> init;
+		end
 
 end
