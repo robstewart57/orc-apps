@@ -76,7 +76,11 @@ actor histogram_normalisation () uint(size=16) Gin ==> uint(size=8) Gout :
 	guard
 		histogram_count < histogram_bins
 	do //Normalise between 0 and 1
-		out := ((in_histogram[histogram_count] - min) * 255) / ((max - min));
+		if (min - max) = 0 then 
+			out := 255;
+		else
+			out := ((in_histogram[histogram_count] - min) * 255) / ((max - min));
+		end
 		histogram_count := histogram_count + 1;
 	end
 
