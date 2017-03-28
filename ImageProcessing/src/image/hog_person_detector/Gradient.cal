@@ -36,10 +36,11 @@
 package image.hog_person_detector;
 
 import image.constants.constants.*;
+import image.hog_person_detector.constants.*;
 
 actor Gradient() uint(size=8) Gin ==> uint(size=8) Angle, uint(size=8) Magnitude :
-    uint(size=8) WIDTH = 8;
-    uint(size=8) HEIGHT = 8;
+    uint(size=8) WIDTH = CELL_WIDTH;
+    uint(size=8) HEIGHT = CELL_HEIGHT;
     uint(size=32) SIZE = WIDTH * HEIGHT;
     uint(size=8) buff[SIZE];
     uint(size=32) rp := 0;
