@@ -31,11 +31,11 @@
 
 /*
 * Author: Mark Young & Teymoor Rasheed Ali my120@hw.ac.uk tr78@hw.ac.uk
-* Date: 20.03.2017
+* Date: 27.02.2017
 */
 package image.hog_person_detector;
 
-actor histogram_normalisation () uint(size=16) Gin ==> uint(size=16) Gout :
+actor histogram_normalisation () uint(size=16) Gin ==> uint(size=8) Gout :
 
 /* Constants */
 	uint(size=8) histogram_bins := 36;
@@ -76,7 +76,7 @@ actor histogram_normalisation () uint(size=16) Gin ==> uint(size=16) Gout :
 	guard
 		histogram_count < histogram_bins
 	do //Normalise between 0 and 1
-		out := (in_histogram[histogram_count] - min) / (max - min);
+		out := (in_histogram[histogram_count] - min) / ((max - min) * 255);
 		histogram_count := histogram_count + 1;
 	end
 
