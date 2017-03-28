@@ -36,12 +36,12 @@
 package image.hog_person_detector;
 
 import image.constants.constants.*;
+import image.hog_person_detector.constants.*;
 
 actor Blocks() uint(size=16) Gin ==> uint(size=16) Gout :
-    uint(size=8) WINDOW_SIZE = 8;
-    uint(size=8) HIST_LENGTH = 9;
-    uint(size=32) ROWS = IM_HEIGHT_IN / WINDOW_SIZE;
-    uint(size=32) COLS = IM_WIDTH_IN / WINDOW_SIZE;
+    uint(size=8) WINDOW_SIZE = CELL_WIDTH;
+    uint(size=32) ROWS = FRAME_HEIGHT / WINDOW_SIZE;
+    uint(size=32) COLS = FRAME_WIDTH / WINDOW_SIZE;
     uint(size=16) above[COLS][HIST_LENGTH];
     uint(size=16) above_read[COLS][HIST_LENGTH];
     uint(size=16) last[HIST_LENGTH];
