@@ -1,4 +1,4 @@
-package image.hog_person_detection;
+package image.hog_person_detector;
 
 actor hist_output() uint(size=16) values ==>  :
 	int(size=128) i := 0;
