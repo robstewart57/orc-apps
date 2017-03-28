@@ -85,13 +85,13 @@ actor inverseslidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 	guard
 		head < bufferSize
 	do
-	
-		
+
+
 		out := buffer[(y + yBase) * imageWidth + x + xBase];
 		// for x to windowDimension
-		
+
 		// then y++
-		
+
 		// if y >= windowDimension
 			// then xBase ++ windowDinsion
 			// x == 0
@@ -103,13 +103,13 @@ actor inverseslidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 		if x >= windowDimension then
 		x := 0;
 		y := y + 1;
-			if y >= windowDimension then 
+			if y >= windowDimension then
 			xBase := xBase + windowDimension;
 			x := 0;
 			y := 0;
 				if xBase >= imageWidth then
 				yBase := yBase + windowDimension;
-				xBase := 0;  		
+				xBase := 0;
 				end
 			end
 		end

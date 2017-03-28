@@ -2,15 +2,15 @@ package image.hog_person_detector;
 
 actor hist_output() uint(size=16) values ==>  :
 	int(size=128) i := 0;
-	
-	
-    action values:[a] ==>
-    guard
-    	i<10
-    do
-    	print("result "+i+ " - " + a + "\n");
-	    i := i + 1;
+
+
+	action values:[a] ==>
+	guard
+		i<10
+	do
+		print("result "+i+ " - " + a + "\n");
+		i := i + 1;
 	end
-	
+
 
 end
