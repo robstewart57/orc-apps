@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <XDF name="TestHistogramBinning2">
     <Instance id="FileWriter">
-        <Class name="image.hog_person_detection.hist_binning_input2"/>
+        <Class name="image.hog_person_detector.hist_binning_input2"/>
     </Instance>
     <Instance id="instance">
-        <Class name="image.hog_person_detection.histogram_binning"/>
+        <Class name="image.hog_person_detector.histogram_binning"/>
     </Instance>
     <Instance id="instance_0">
-        <Class name="image.hog_person_detection.hist_output"/>
+        <Class name="image.hog_person_detector.hist_output"/>
     </Instance>
     <Connection dst="instance" dst-port="angle" src="FileWriter" src-port="angle"/>
     <Connection dst="instance" dst-port="intensity" src="FileWriter" src-port="intensity"/>
