@@ -35,14 +35,16 @@
  */
 package image.hog_person_detector;
 
+import image.hog_person_detector.constants.*;
+
 actor inverseslidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 
 /* Constants */
-	uint(size=8) imageHeight = 128;
+	uint(size=8) imageHeight = FRAME_HEIGHT;
 
-	uint(size=8) windowDimension = 8;
+	uint(size=8) windowDimension = CELL_WIDTH;
 
-	uint(size=8) imageWidth = 64;
+	uint(size=8) imageWidth = FRAME_WIDTH;
 
 	uint(size=16) bufferSize = imageWidth * imageHeight;
 
@@ -83,13 +85,13 @@ actor inverseslidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 	guard
 		head < bufferSize
 	do
-	
-		
+
+
 		out := buffer[(y + yBase) * imageWidth + x + xBase];
 		// for x to windowDimension
-		
+
 		// then y++
-		
+
 		// if y >= windowDimension
 			// then xBase ++ windowDinsion
 			// x == 0
@@ -101,13 +103,13 @@ actor inverseslidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 		if x >= windowDimension then
 		x := 0;
 		y := y + 1;
-			if y >= windowDimension then 
+			if y >= windowDimension then
 			xBase := xBase + windowDimension;
 			x := 0;
 			y := 0;
 				if xBase >= imageWidth then
 				yBase := yBase + windowDimension;
-				xBase := 0;  		
+				xBase := 0;
 				end
 			end
 		end

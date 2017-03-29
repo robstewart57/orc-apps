@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XDF name="TopCameraEdgeDetectorDisplay">
+    <Instance id="CameraSource">
+        <Class name="std.image.SourceCamera"/>
+    </Instance>
+    <Instance id="RGBToYUV">
+        <Class name="image.conversion.RGBToYUV"/>
+    </Instance>
+    <Instance id="edges">
+        <Class name="image.features.Sobel"/>
+    </Instance>
+    <Instance id="Display">
+        <Class name="std.image.DisplayGray"/>
+    </Instance>
+    <Instance id="PrintClicked">
+        <Class name="cal.PrintClicked"/>
+    </Instance>
+    <Connection dst="RGBToYUV" dst-port="R" src="CameraSource" src-port="R">
+        <Attribute kind="Value" name="bufferSize">
+            <Expr kind="Literal" literal-kind="Integer" value="524288"/>
+        </Attribute>
+    </Connection>
+    <Connection dst="RGBToYUV" dst-port="G" src="CameraSource" src-port="G">
+        <Attribute kind="Value" name="bufferSize">
+            <Expr kind="Literal" literal-kind="Integer" value="524288"/>
+        </Attribute>
+    </Connection>
+    <Connection dst="RGBToYUV" dst-port="B" src="CameraSource" src-port="B">
+        <Attribute kind="Value" name="bufferSize">
+            <Expr kind="Literal" literal-kind="Integer" value="524288"/>
+        </Attribute>
+    </Connection>
+    <Connection dst="edges" dst-port="Y" src="RGBToYUV" src-port="Y">
+        <Attribute kind="Value" name="bufferSize">
+            <Expr kind="Literal" literal-kind="Integer" value="524288"/>
+        </Attribute>
+    </Connection>
+    <Connection dst="Display" dst-port="Gray" src="edges" src-port="GRADIENT">
+        <Attribute kind="Value" name="bufferSize">
+            <Expr kind="Literal" literal-kind="Integer" value="524288"/>
+        </Attribute>
+    </Connection>
+    <Connection dst="PrintClicked" dst-port="X" src="Display" src-port="xPos"/>
+    <Connection dst="PrintClicked" dst-port="Y" src="Display" src-port="yPos"/>
+</XDF>

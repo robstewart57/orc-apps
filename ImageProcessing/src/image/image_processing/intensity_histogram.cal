@@ -1,5 +1,7 @@
+
+
 /*
- * Copyright (c) 2011, EPFL
+ * Copyright (c) 2017, Heriot-Watt University, Edinburgh
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +12,7 @@
  *   * Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the documentation
  *     and/or other materials provided with the distribution.
- *   * Neither the name of the EPFL nor the names of its
+ *   * Neither the name of the IRISA nor the names of its
  *     contributors may be used to endorse or promote products derived from this
  *     software without specific prior written permission.
  * 
@@ -26,66 +28,69 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
- 
-// Author: Endri Bezati <endri.bezati@epfl.ch>
 
-package std.io;
-
-/**
- * Standard I/O writer actor.
+/*
+ * Author: Calum Turner <cajturner@gmail.com>
+ * Date: 08.02.2017
+ * See intensity_histogram.md for documentation.
  */
-@xronos_no_generation
-actor Writer()
- 	uint(size=8) Byte,
- 	bool pEOF
- 		==> 
- 			:
+package image.image_processing;
 
-	/**
-	 * Initializing the file to be written
-	 */
-	@native procedure Writer_init() end
+import image.constants.constants.* ;
 
-	/**
-	 * Write a byte to a file
-	 */
-	@native procedure Writer_write(uint(size=8) byte) end
-	
-	/**
-	 * Close the file
-	 */
-	@native procedure Writer_close() end
+actor intensity_histogram () uint(size=8) Gin1 ==> uint(size=16) Gout :
 
-	initialize ==>
-	do		
-		Writer_init();					
-	end
-	
-	bool peof := false;
-	
-	GetEOF: action pEOF:[p] ==>
-	do  	    
-		peof := p;		
-	end
-	
-	Write: action Byte:[b] ==>
-	guard
-		not peof
+	uint(size=32) imagesize = IM_WIDTH_OUT * IM_HEIGHT_OUT * COLOUR_CHANNELS_OUT;
+
+	uint(size=32) p_count := 0;
+
+	uint(size=16) histogram [ 256 ] := [ 0 ];
+
+	uint(size=9) o_count := 0;
+
+	uint(size=9) i := 0;
+
+	initActor: action ==>
 	do
-		Writer_write(b);
+		o_count := 0;
+		p_count := 0;
+		i := 0;
 	end
-	
-	Close: action ==>
+
+	initArray: action ==>
 	guard
-		peof
+	    i < 256
 	do
-		println("closing");
-		Writer_close();
+		histogram[i] := 0;
+		i := i + 1;
 	end
-	
-	schedule fsm s1:
-		//s0		(GetEOF)		--> s1;
-		s1		(Write)			--> s1;
-		s1		(Close)			--> s1;
+
+	processPixels: action Gin1:[ x ] ==>
+	guard
+		i = 256
+	do
+		histogram[x] := histogram[x] + 1;
+		p_count := p_count + 1;
 	end
+
+	outputArray: action ==> Gout:[ histogram[o_count-1] ]
+	guard
+		p_count = imagesize , i = 256 , o_count < 256
+	do
+		o_count := o_count + 1;
+	end
+
+	resetActor: action ==>
+	guard
+		o_count = 256
+	end
+
+	schedule fsm init :
+		init ( initActor ) --> read;
+		read ( initArray ) --> read;
+		read ( processPixels ) --> read;
+		read ( outputArray ) --> read;
+		read ( resetActor ) --> init;
+		end
+
 end

@@ -21,7 +21,7 @@
         <Class name="image.hog_person_detector.Gradient"/>
     </Instance>
     <Instance id="histogram_binning">
-        <Class name="image.hog_person_detection.histogram_binning"/>
+        <Class name="image.hog_person_detector.histogram_binning"/>
     </Instance>
     <Instance id="Blocks">
         <Class name="image.hog_person_detector.Blocks"/>

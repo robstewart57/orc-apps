@@ -35,14 +35,16 @@
  */
 package image.hog_person_detector;
 
+import image.hog_person_detector.constants.*;
+
 actor slidingwindow () uint(size=8) Gin ==> uint(size=8) Gout :
 
 /* Constants */
-	uint(size=8) imageHeight = 128;
+	uint(size=8) imageHeight = FRAME_HEIGHT;
 
-	uint(size=8) windowDimension = 8;
+	uint(size=8) windowDimension = CELL_HEIGHT;
 
-	uint(size=8) imageWidth = 64;
+	uint(size=8) imageWidth = FRAME_WIDTH;
 
 	uint(size=16) bufferSize = imageWidth * imageHeight;
 
