@@ -35,10 +35,12 @@
 */
 package image.hog_person_detector;
 
+import image.hog_person_detector.constants.*;
+
 actor histogram_normalisation () uint(size=16) Gin ==> uint(size=8) Gout :
 
-/* Constants */
-	uint(size=8) histogram_bins := 36;
+	/* Constants */
+	uint(size=8) histogram_bins := HIST_LENGTH * 4;
 
 	/* Variables */
 	uint(size=8) histogram_count := 0;
