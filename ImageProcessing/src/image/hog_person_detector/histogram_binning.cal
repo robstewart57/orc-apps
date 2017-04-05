@@ -7,10 +7,12 @@ actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(si
 	uint(size=16) i := 0;
 	uint(size=8) read_count := 0;
 	uint(size=8) out_count := 0;
-	uint(size=8) slot := 0;
-	uint(size=8) left := 0;
+	int(size=16) slot := 0;
+	int(size=16) left := 0;
 	uint(size=8) low := 0;
 	uint(size=8) high := 0;
+	int(size=16) astore := 0;
+	int(size=16) hislot := 0;
 
 
 	initArray: action ==>
@@ -30,31 +32,25 @@ actor histogram_binning() uint(size=8) angle, uint(size=8) intensity ==> uint(si
 		read_count < 64
 	do
 		i := intense;
-		if angle <= 10 then
-			histogram[0] := histogram[0] + i;
+		astore := angle - 10;
+		slot := astore / 20;
+		left := astore mod 20;
+		hislot := slot + 1;
+		if slot < 0 then
+			slot := HIST_LENGTH - 1;
+		end
+		if hislot >= HIST_LENGTH then
+			hislot := 0;
+		end
+
+		if left = 0 then
+			histogram[slot] := histogram[slot] + i;
 		else
-			if angle >= 170 then
-				histogram[8] := histogram[8] + i;
-			else
-				angle := angle - 10;
-				slot := angle / 20;
-				left := angle mod 20;
+			low := ((20 - left) * i) / 20;
+			high := (left * i) /20;
 
-				if left = 0 then
-					histogram[slot] := histogram[slot] + i;
-				else
-
-					low := ((20 - left) * i) / 20;
-					high := (left * i) /20;
-
-					if slot > 0 then
-						histogram[slot] := histogram[slot] + low;
-					end
-					if slot < 9 then
-						histogram[slot + 1] := histogram[slot+1] + high;
-					end
-				end
-			end
+			histogram[slot] := histogram[slot] + low;
+			histogram[hislot] := histogram[hislot] + high;
 		end
 		read_count := read_count + 1;
 	end
